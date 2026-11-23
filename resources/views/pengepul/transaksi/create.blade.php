@@ -93,14 +93,15 @@
                         <label for="potonganInput" class="text-xs font-bold text-emerald-200 flex items-center">
                             Potongan Kewajiban / Cicilan Modal:
                             <span class="ml-2 text-[10px] px-2 py-0.5 rounded bg-emerald-800/80 text-emerald-300">Disepakati</span>
+                            <button type="button" onclick="resetPotonganAuto()" class="ml-2 text-[10px] px-2 py-0.5 rounded bg-amber-400 text-slate-900 font-bold">Potong penuh</button>
                         </label>
-                        <span class="text-[11px] text-emerald-300/80 block">Nominal untuk mengurangi kewajiban utang modal petani</span>
+                        <span class="text-[11px] text-emerald-300/80 block">Otomatis = total panen, dibatasi sisa kewajiban. Bisa diubah manual.</span>
                     </div>
                     <div class="w-full sm:w-56">
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-rose-300 font-bold text-xs">Rp</span>
                             <input type="number" name="potongan_kewajiban" id="potonganInput" value="{{ old('potongan_kewajiban', 0) }}" min="0" step="1"
-                                oninput="calculateAll()"
+                                oninput="onPotonganInput()"
                                 class="w-full pl-9 pr-3 py-2 rounded-xl bg-emerald-900 border border-emerald-700 text-white font-black text-right text-sm focus:ring-2 focus:ring-amber-400">
                         </div>
                     </div>
@@ -154,6 +155,7 @@
     const komoditasData = @json($komoditasList);
     let currentPetaniDebt = 0;
     let rowIndex = 0;
+    let potonganManual = false;
     // Rupiah: 25.000 / 25,000 / Rp 25.000 dibaca sebagai 25000, bukan 25.
     // parseFloat('25.000') = 25, itu penyebab 4 kg x 25.000 jadi 100.
     function parseRupiah(v) {
@@ -175,6 +177,7 @@
 
 
     function updatePetaniInfo() {
+        potonganManual = false;
         const select = document.getElementById('petaniSelect');
         const opt = select.options[select.selectedIndex];
         if (opt && opt.value) {
@@ -276,6 +279,15 @@
         calculateAll();
     }
 
+    function onPotonganInput() {
+        potonganManual = true;
+        calculateAll();
+    }
+    function resetPotonganAuto() {
+        potonganManual = false;
+        calculateAll();
+    }
+
     function calculateAll() {
         let totalBruto = 0;
         document.querySelectorAll('[id^="raw-subtotal-"]').forEach(el => {
@@ -285,18 +297,22 @@
         document.getElementById('labelTotalBruto').innerText = 'Rp ' + totalBruto.toLocaleString('id-ID');
         document.getElementById('hiddenTotalBruto').value = totalBruto;
 
-        let potongan = parseRupiah(document.getElementById('potonganInput').value);
-        
-        // Batasi potongan tidak boleh melebihi total panen
-        if (potongan > totalBruto) {
-            potongan = totalBruto;
-            document.getElementById('potonganInput').value = potongan;
-        }
-
-        // Batasi potongan tidak boleh melebihi sisa utang berjalan
-        if (currentPetaniDebt > 0 && potongan > currentPetaniDebt) {
-            potongan = currentPetaniDebt;
-            document.getElementById('potonganInput').value = potongan;
+        const potonganInputEl = document.getElementById('potonganInput');
+        let potongan;
+        if (!potonganManual) {
+            // Otomatis: seluruh hasil panen ditahan untuk membayar kewajiban,
+            // dibatasi sisa kewajiban. Petani baru menerima uang kalau total panen melebihi sisa.
+            potongan = Math.min(totalBruto, currentPetaniDebt);
+            if (potonganInputEl) potonganInputEl.value = potongan;
+        } else {
+            potongan = parseRupiah(potonganInputEl.value);
+            if (potongan > totalBruto) {
+                potongan = totalBruto;
+            }
+            if (currentPetaniDebt > 0 && potongan > currentPetaniDebt) {
+                potongan = currentPetaniDebt;
+            }
+            if (potonganInputEl) potonganInputEl.value = potongan;
         }
 
         const uangDiterima = Math.max(0, totalBruto - potongan);
