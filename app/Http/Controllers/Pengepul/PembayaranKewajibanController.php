@@ -28,7 +28,7 @@ class PembayaranKewajibanController extends Controller
             $query->where('petani_id', $petaniId);
         }
 
-        $pembayarans = $query->latest('tanggal_bayar')->paginate(10)->withQueryString();
+        $pembayarans = $query->orderByDesc('tanggal_bayar')->orderByDesc('created_at')->orderByDesc('id')->paginate(10)->withQueryString();
         $petanis = Petani::orderBy('nama_petani')->get();
 
         $totalBayarTunai = PembayaranKewajiban::sum('jumlah_bayar');
