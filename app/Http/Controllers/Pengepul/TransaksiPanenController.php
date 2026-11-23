@@ -156,6 +156,16 @@ class TransaksiPanenController extends Controller
     public function cetak(TransaksiPanen $transaksi)
     {
         $transaksi->load(['petani', 'details.komoditas', 'user']);
+
+        // Kalau Dompdf sudah terpasang (composer require barryvdh/laravel-dompdf),
+        // unduh langsung sebagai file PDF. Kalau belum, jatuh ke halaman
+        // cetak lama (window.print, lalu pilih Save as PDF di dialog browser).
+        if (class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pengepul.transaksi.cetak_pdf', compact('transaksi'));
+            $pdf->setPaper('a4', 'portrait');
+            return $pdf->download('Nota-' . $transaksi->nomor_transaksi . '.pdf');
+        }
+
         return view('pengepul.transaksi.cetak', compact('transaksi'));
     }
 
