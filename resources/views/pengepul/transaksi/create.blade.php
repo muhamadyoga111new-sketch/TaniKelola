@@ -154,6 +154,25 @@
     const komoditasData = @json($komoditasList);
     let currentPetaniDebt = 0;
     let rowIndex = 0;
+    // Rupiah: 25.000 / 25,000 / Rp 25.000 dibaca sebagai 25000, bukan 25.
+    // parseFloat('25.000') = 25, itu penyebab 4 kg x 25.000 jadi 100.
+    function parseRupiah(v) {
+        let s = String(v ?? '').trim();
+        if (!s) return 0;
+        s = s.split(',')[0];
+        s = s.replace(/[^0-9]/g, '');
+        return parseFloat(s) || 0;
+    }
+    // Berat kg: 4,5 dan 4.5 sama-sama dibaca 4.5
+    function parseDecimal(v) {
+        let s = String(v ?? '').trim();
+        if (!s) return 0;
+        if (s.includes(',')) {
+            s = s.replace(/\./g, '').replace(',', '.');
+        }
+        return parseFloat(s) || 0;
+    }
+
 
     function updatePetaniInfo() {
         const select = document.getElementById('petaniSelect');
@@ -239,8 +258,8 @@
     }
 
     function calculateRow(idx) {
-        const qty = parseFloat(document.getElementById(`qty-${idx}`).value) || 0;
-        const harga = parseFloat(document.getElementById(`harga-${idx}`).value) || 0;
+        const qty = parseDecimal(document.getElementById(`qty-${idx}`).value);
+        const harga = parseRupiah(document.getElementById(`harga-${idx}`).value);
         const subtotal = qty * harga;
 
         document.getElementById(`subtotal-${idx}`).innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
@@ -266,7 +285,7 @@
         document.getElementById('labelTotalBruto').innerText = 'Rp ' + totalBruto.toLocaleString('id-ID');
         document.getElementById('hiddenTotalBruto').value = totalBruto;
 
-        let potongan = parseFloat(document.getElementById('potonganInput').value) || 0;
+        let potongan = parseRupiah(document.getElementById('potonganInput').value);
         
         // Batasi potongan tidak boleh melebihi total panen
         if (potongan > totalBruto) {
@@ -285,6 +304,17 @@
 
         document.getElementById('labelUangDiterima').innerText = 'Rp ' + uangDiterima.toLocaleString('id-ID');
         document.getElementById('labelSisaSetelahnya').innerText = 'Rp ' + sisaKewajibanBaru.toLocaleString('id-ID');
+    }
+
+    // Normalisasi sebelum kirim ke server, supaya 25.000 terkirim sebagai 25000 bukan 25
+    const transaksiForm = document.getElementById('transaksiForm');
+    if (transaksiForm) {
+        transaksiForm.addEventListener('submit', function () {
+            document.querySelectorAll('[id^="harga-"]').forEach(function (el) { el.value = parseRupiah(el.value); });
+            document.querySelectorAll('[id^="qty-"]').forEach(function (el) { el.value = parseDecimal(el.value); });
+            const pot = document.getElementById('potonganInput');
+            if (pot) { pot.value = parseRupiah(pot.value); }
+        });
     }
 
     // Initialize with 1 row on load
