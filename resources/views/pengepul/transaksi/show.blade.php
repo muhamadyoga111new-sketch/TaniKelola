@@ -5,13 +5,23 @@
 @section('page_subtitle', 'Nota resmi penjualan hasil panen ' . $transaksi->nomor_transaksi)
 
 @section('content')
+@php
+    // Kembali ke halaman sebelumnya (daftar modal / detail petani / dashboard, dst).
+    // Kalau tidak ada halaman sebelumnya yang aman (misal dibuka langsung,
+    // atau habis dari form create), jatuh ke daftar transaksi.
+    $previousUrl = url()->previous();
+    $backUrl = route('pengepul.transaksi.index');
+    if ($previousUrl && $previousUrl !== url()->current() && str_starts_with($previousUrl, url('/')) && !str_contains($previousUrl, '/create') && !str_contains($previousUrl, '/edit')) {
+        $backUrl = $previousUrl;
+    }
+@endphp
 <div class="max-w-3xl mx-auto space-y-6">
 
     <!-- Action Toolbar -->
     <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <a href="{{ route('pengepul.transaksi.index') }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+        <a href="{{ $backUrl }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center space-x-1">
             <span>&larr;</span>
-            <span>Kembali ke Daftar</span>
+            <span>Kembali</span>
         </a>
 
         <div class="flex items-center space-x-2">
