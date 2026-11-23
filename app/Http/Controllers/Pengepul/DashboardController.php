@@ -49,7 +49,7 @@ class DashboardController extends Controller
                     'petani' => $trx->petani->nama_petani ?? '-',
                     'detail' => $trx->details->map(fn ($d) => ($d->komoditas->nama_komoditas ?? '-') . ': ' . $d->jumlah_panen . ' ' . ($d->komoditas->satuan ?? ''))->join(', '),
                     'nominal' => $trx->total_bruto,
-                    'sub' => 'Potong Rp ' . number_format($trx->potongan_kewajiban, 0, ',', '.') . ' \u2022 Diterima Rp ' . number_format($trx->uang_diterima_petani, 0, ',', '.'),
+                    'sub' => 'Potong Rp ' . number_format($trx->potongan_kewajiban, 0, ',', '.') . ' • Diterima Rp ' . number_format($trx->uang_diterima_petani, 0, ',', '.'),
                     'url' => route('pengepul.transaksi.show', $trx),
                 ]))
             ->merge(Modal::with('petani')
@@ -61,7 +61,7 @@ class DashboardController extends Controller
                     'created_at' => $modal->created_at,
                     'id' => $modal->id,
                     'petani' => $modal->petani->nama_petani ?? '-',
-                    'detail' => collect([$modal->jenis_modal, $modal->kategori_kebutuhan, $modal->rincian_barang])->filter()->join(' \u2022 '),
+                    'detail' => collect([$modal->jenis_modal, $modal->kategori_kebutuhan, $modal->rincian_barang])->filter()->join(' • '),
                     'nominal' => $modal->nominal,
                     'sub' => $modal->catatan ?: 'Pemberian modal',
                     'url' => route('pengepul.modal.show', $modal),
