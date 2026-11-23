@@ -24,14 +24,14 @@ class DashboardController extends Controller
 
         // Transaksi panen terbaru
         $transaksiTerbaru = TransaksiPanen::with(['petani', 'details.komoditas'])
-            ->orderByDesc('tanggal_transaksi')
+            ->orderByDesc('tanggal_transaksi')->orderByDesc('created_at')->orderByDesc('id')
             ->take(5)
             ->get();
 
 
         // Modal terbaru
         $modalTerbaru = Modal::with('petani')
-            ->latest('tanggal_pemberian')
+            ->orderByDesc('tanggal_pemberian')->orderByDesc('created_at')->orderByDesc('id')
             ->take(5)
             ->get();
 
