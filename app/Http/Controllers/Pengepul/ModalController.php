@@ -32,7 +32,7 @@ class ModalController extends Controller
             $query->where('jenis_modal', $jenisModal);
         }
 
-        $modals = $query->latest('tanggal_pemberian')->paginate(10)->withQueryString();
+        $modals = $query->orderByDesc('tanggal_pemberian')->orderByDesc('created_at')->orderByDesc('id')->paginate(10)->withQueryString();
         $petanis = Petani::orderBy('nama_petani')->get();
 
         $totalNominalModal = Modal::sum('nominal');
