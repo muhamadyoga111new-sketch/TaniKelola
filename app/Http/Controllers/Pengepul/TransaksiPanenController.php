@@ -38,7 +38,7 @@ class TransaksiPanenController extends Controller
             $query->whereDate('tanggal_transaksi', '<=', $endDate);
         }
 
-        $transaksis = $query->latest('tanggal_transaksi')->paginate(10)->withQueryString();
+        $transaksis = $query->orderByDesc('tanggal_transaksi')->orderByDesc('created_at')->orderByDesc('id')->paginate(10)->withQueryString();
         $petanis = Petani::orderBy('nama_petani')->get();
 
         $totalNilaiPanen = TransaksiPanen::sum('total_bruto');
