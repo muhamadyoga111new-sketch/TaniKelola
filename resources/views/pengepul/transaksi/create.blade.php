@@ -99,7 +99,7 @@
                     <div class="w-full sm:w-56">
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-rose-300 font-bold text-xs">Rp</span>
-                            <input type="number" name="potongan_kewajiban" id="potonganInput" value="{{ old('potongan_kewajiban', 0) }}" min="0" step="5000"
+                            <input type="number" name="potongan_kewajiban" id="potonganInput" value="{{ old('potongan_kewajiban', 0) }}" min="0" step="1"
                                 oninput="calculateAll()"
                                 class="w-full pl-9 pr-3 py-2 rounded-xl bg-emerald-900 border border-emerald-700 text-white font-black text-right text-sm focus:ring-2 focus:ring-amber-400">
                         </div>
@@ -218,7 +218,7 @@
             <td class="p-2.5">
                 <div class="relative">
                     <span class="absolute left-2 top-2 text-[10px] text-slate-400 font-bold">Rp</span>
-                    <input type="number" step="500" min="100" name="items[${rowIndex}][harga_beli]" id="harga-${rowIndex}" required placeholder="0" oninput="calculateRow(${rowIndex})"
+                    <input type="number" step="1" min="100" name="items[${rowIndex}][harga_beli]" id="harga-${rowIndex}" required placeholder="0" oninput="calculateRow(${rowIndex})"
                         class="w-full pl-7 pr-2 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-emerald-800">
                 </div>
             </td>
