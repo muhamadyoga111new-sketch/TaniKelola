@@ -30,6 +30,11 @@
             </div>
 
             <div class="flex justify-between py-1 border-b border-slate-50">
+                <span class="text-slate-500 text-xs">Waktu Dicatat</span>
+                <span class="font-semibold text-slate-800">{{ $modal->created_at->translatedFormat('d F Y, H:i') }} WITA</span>
+            </div>
+
+            <div class="flex justify-between py-1 border-b border-slate-50">
                 <span class="text-slate-500 text-xs">Kategori Kebutuhan</span>
                 <span class="font-semibold text-slate-800">{{ $modal->kategori_kebutuhan }}</span>
             </div>
