@@ -30,6 +30,11 @@
             </div>
 
             <div class="flex justify-between py-1 border-b border-slate-50">
+                <span class="text-slate-500 text-xs">Waktu Dicatat</span>
+                <span class="font-semibold text-slate-800">{{ $pembayaran->created_at->translatedFormat('d F Y, H:i') }} WITA</span>
+            </div>
+
+            <div class="flex justify-between py-1 border-b border-slate-50">
                 <span class="text-slate-500 text-xs">Metode Pembayaran</span>
                 <span class="font-semibold text-slate-800">{{ $pembayaran->metode_bayar }}</span>
             </div>
