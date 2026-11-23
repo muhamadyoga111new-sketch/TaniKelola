@@ -52,6 +52,9 @@
                 <div class="text-xs text-slate-500">
                     Tanggal: {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->translatedFormat('d F Y') }}
                 </div>
+                <div class="text-xs text-slate-500">
+                    Dicatat: {{ $transaksi->created_at->translatedFormat('d F Y, H:i') }} WITA
+                </div>
                 <div class="mt-1">
                     @if($transaksi->status_wa === 'terkirim')
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">WhatsApp Terkirim</span>
