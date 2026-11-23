@@ -5,6 +5,16 @@
 @section('page_subtitle', 'Bukti pencatatan modal budidaya ' . $modal->kode_modal)
 
 @section('content')
+@php
+    // Kembali ke halaman sebelumnya (daftar modal / detail petani / dashboard, dst).
+    // Kalau tidak ada halaman sebelumnya yang aman (misal dibuka langsung,
+    // atau habis dari form create), jatuh ke daftar modal.
+    $previousUrl = url()->previous();
+    $backUrl = route('pengepul.modal.index');
+    if ($previousUrl && $previousUrl !== url()->current() && str_starts_with($previousUrl, url('/')) && !str_contains($previousUrl, '/create') && !str_contains($previousUrl, '/edit')) {
+        $backUrl = $previousUrl;
+    }
+@endphp
 <div class="max-w-xl mx-auto">
     <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-8 space-y-6">
 
@@ -71,8 +81,8 @@
                 </button>
             </form>
 
-            <a href="{{ route('pengepul.petani.show', $modal->petani) }}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition">
-                Kembali ke Ledger Petani &rarr;
+            <a href="{{ $backUrl }}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition">
+                &larr; Kembali
             </a>
         </div>
     </div>
