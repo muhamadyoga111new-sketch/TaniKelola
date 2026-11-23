@@ -15,7 +15,13 @@
         $backUrl = $previousUrl;
     }
 @endphp
-<div class="max-w-xl mx-auto">
+<div class="max-w-xl mx-auto space-y-4">
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <a href="{{ $backUrl }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center space-x-1">
+            <span>&larr;</span>
+            <span>Kembali</span>
+        </a>
+    </div>
     <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-8 space-y-6">
 
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
