@@ -218,6 +218,26 @@
 
     
 
+    function onKomoditasChange(idx) {
+        const row = document.getElementById('row-' + idx);
+        if (!row) return;
+        const select = row.querySelector('select[name="items[' + idx + '][komoditas_id]"]');
+        if (!select) return;
+        const opt = select.options[select.selectedIndex];
+        if (!opt || !opt.value) return;
+        const harga = parseFloat(opt.getAttribute('data-harga')) || 0;
+        const satuan = opt.getAttribute('data-satuan') || 'kg';
+        const hargaInput = document.getElementById('harga-' + idx);
+        if (hargaInput && harga > 0) {
+            hargaInput.value = harga;
+        }
+        const satuanEl = document.getElementById('satuan-' + idx);
+        if (satuanEl) {
+            satuanEl.innerText = satuan;
+        }
+        calculateRow(idx);
+    }
+
     function calculateRow(idx) {
         const qty = parseFloat(document.getElementById(`qty-${idx}`).value) || 0;
         const harga = parseFloat(document.getElementById(`harga-${idx}`).value) || 0;
@@ -268,6 +288,7 @@
     }
 
     // Initialize with 1 row on load
-    
+    addRow();
+    updatePetaniInfo();
 </script>
 @endsection
