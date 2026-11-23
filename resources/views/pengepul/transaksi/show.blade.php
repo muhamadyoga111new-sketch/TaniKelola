@@ -177,8 +177,11 @@
                 </button>
             </form>
 
-            <span class="text-[11px] text-slate-400">Dicatat di Sistem TaniKelola</span>
+            <a href="{{ $backUrl }}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition">
+                &larr; Kembali
+            </a>
         </div>
+        <p class="text-[11px] text-slate-400 text-right">Dicatat di Sistem TaniKelola</p>
 
     </div>
 
