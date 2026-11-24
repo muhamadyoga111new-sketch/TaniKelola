@@ -5,30 +5,17 @@
 @section('page_subtitle', 'Nota resmi penjualan hasil panen ' . $transaksi->nomor_transaksi)
 
 @section('content')
+@php
+    // Kembali ke halaman sebelumnya (daftar modal / detail petani / dashboard, dst).
+    // Kalau tidak ada halaman sebelumnya yang aman (misal dibuka langsung,
+    // atau habis dari form create), jatuh ke daftar transaksi.
+    $previousUrl = url()->previous();
+    $backUrl = route('pengepul.transaksi.index');
+    if ($previousUrl && $previousUrl !== url()->current() && str_starts_with($previousUrl, url('/')) && !str_contains($previousUrl, '/create') && !str_contains($previousUrl, '/edit')) {
+        $backUrl = $previousUrl;
+    }
+@endphp
 <div class="max-w-3xl mx-auto space-y-6">
-
-    <!-- Action Toolbar -->
-    <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <a href="{{ route('pengepul.transaksi.index') }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center space-x-1">
-            <span>&larr;</span>
-            <span>Kembali ke Daftar</span>
-        </a>
-
-        <div class="flex items-center space-x-2">
-            <form action="{{ route('pengepul.transaksi.kirim_wa', $transaksi) }}" method="POST">
-                @csrf
-                <button type="submit" class="px-3.5 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 font-bold text-xs flex items-center space-x-1.5 transition">
-                    <span>💬</span>
-                    <span>Kirim Ulang Notifikasi WhatsApp</span>
-                </button>
-            </form>
-
-            <a href="{{ route('pengepul.transaksi.cetak', $transaksi) }}" target="_blank" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center space-x-1.5 transition shadow-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Cetak Nota (PDF)</span>
-            </a>
-        </div>
-    </div>
 
     <!-- The Invoice Card -->
     <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-8 space-y-6">
@@ -51,6 +38,9 @@
                 <div class="text-lg font-black text-slate-900">{{ $transaksi->nomor_transaksi }}</div>
                 <div class="text-xs text-slate-500">
                     Tanggal: {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->translatedFormat('d F Y') }}
+                </div>
+                <div class="text-xs text-slate-500">
+                    Dicatat: {{ $transaksi->created_at->translatedFormat('d F Y, H:i') }} WITA
                 </div>
                 <div class="mt-1">
                     @if($transaksi->status_wa === 'terkirim')
@@ -155,7 +145,7 @@
             </div>
         @endif
 
-        <div class="pt-6 border-t border-slate-100 flex items-center justify-between">
+        <div class="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
             <form action="{{ route('pengepul.transaksi.destroy', $transaksi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan dan menghapus transaksi ini? Kewajiban petani akan disesuaikan kembali.');">
                 @csrf
                 @method('DELETE')
@@ -164,8 +154,31 @@
                 </button>
             </form>
 
-            <span class="text-[11px] text-slate-400">Dicatat di Sistem TaniKelola</span>
+            <div class="flex flex-wrap items-center gap-2">
+                <form action="{{ route('pengepul.transaksi.kirim_wa', $transaksi) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 font-bold text-xs flex items-center space-x-1.5 transition">
+                        <span>💬</span>
+                        <span>Kirim Ulang Notifikasi WhatsApp</span>
+                    </button>
+                </form>
+
+                <a href="{{ route('pengepul.transaksi.cetak', $transaksi) }}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center space-x-1.5 transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+                    <span>Unduh PDF</span>
+                </a>
+
+                <a href="{{ route('pengepul.transaksi.cetak', [$transaksi, 'print' => 1, 'autoprint' => 1]) }}" target="_blank" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold text-xs flex items-center space-x-1.5 transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Cetak / Print</span>
+                </a>
+
+                <a href="{{ $backUrl }}" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold text-xs transition">
+                    &larr; Kembali
+                </a>
+            </div>
         </div>
+        <p class="text-[11px] text-slate-400 text-right">Dicatat di Sistem TaniKelola</p>
 
     </div>
 

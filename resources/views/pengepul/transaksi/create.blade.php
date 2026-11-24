@@ -93,14 +93,15 @@
                         <label for="potonganInput" class="text-xs font-bold text-emerald-200 flex items-center">
                             Potongan Kewajiban / Cicilan Modal:
                             <span class="ml-2 text-[10px] px-2 py-0.5 rounded bg-emerald-800/80 text-emerald-300">Disepakati</span>
+                            <button type="button" onclick="resetPotonganAuto()" class="ml-2 text-[10px] px-2 py-0.5 rounded bg-amber-400 text-slate-900 font-bold">Potong penuh</button>
                         </label>
-                        <span class="text-[11px] text-emerald-300/80 block">Nominal untuk mengurangi kewajiban utang modal petani</span>
+                        <span class="text-[11px] text-emerald-300/80 block">Otomatis = total panen, dibatasi sisa kewajiban. Bisa diubah manual.</span>
                     </div>
                     <div class="w-full sm:w-56">
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-rose-300 font-bold text-xs">Rp</span>
-                            <input type="number" name="potongan_kewajiban" id="potonganInput" value="{{ old('potongan_kewajiban', 0) }}" min="0" step="5000"
-                                oninput="calculateAll()"
+                            <input type="number" name="potongan_kewajiban" id="potonganInput" value="{{ old('potongan_kewajiban', 0) }}" min="0" step="1"
+                                oninput="onPotonganInput()"
                                 class="w-full pl-9 pr-3 py-2 rounded-xl bg-emerald-900 border border-emerald-700 text-white font-black text-right text-sm focus:ring-2 focus:ring-amber-400">
                         </div>
                     </div>
@@ -154,8 +155,29 @@
     const komoditasData = @json($komoditasList);
     let currentPetaniDebt = 0;
     let rowIndex = 0;
+    let potonganManual = false;
+    // Rupiah: 25.000 / 25,000 / Rp 25.000 dibaca sebagai 25000, bukan 25.
+    // parseFloat('25.000') = 25, itu penyebab 4 kg x 25.000 jadi 100.
+    function parseRupiah(v) {
+        let s = String(v ?? '').trim();
+        if (!s) return 0;
+        s = s.split(',')[0];
+        s = s.replace(/[^0-9]/g, '');
+        return parseFloat(s) || 0;
+    }
+    // Berat kg: 4,5 dan 4.5 sama-sama dibaca 4.5
+    function parseDecimal(v) {
+        let s = String(v ?? '').trim();
+        if (!s) return 0;
+        if (s.includes(',')) {
+            s = s.replace(/\./g, '').replace(',', '.');
+        }
+        return parseFloat(s) || 0;
+    }
+
 
     function updatePetaniInfo() {
+        potonganManual = false;
         const select = document.getElementById('petaniSelect');
         const opt = select.options[select.selectedIndex];
         if (opt && opt.value) {
@@ -199,7 +221,7 @@
             <td class="p-2.5">
                 <div class="relative">
                     <span class="absolute left-2 top-2 text-[10px] text-slate-400 font-bold">Rp</span>
-                    <input type="number" step="500" min="100" name="items[${rowIndex}][harga_beli]" id="harga-${rowIndex}" required placeholder="0" oninput="calculateRow(${rowIndex})"
+                    <input type="number" step="1" min="100" name="items[${rowIndex}][harga_beli]" id="harga-${rowIndex}" required placeholder="0" oninput="calculateRow(${rowIndex})"
                         class="w-full pl-7 pr-2 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-emerald-800">
                 </div>
             </td>
@@ -218,9 +240,29 @@
 
     
 
+    function onKomoditasChange(idx) {
+        const row = document.getElementById('row-' + idx);
+        if (!row) return;
+        const select = row.querySelector('select[name="items[' + idx + '][komoditas_id]"]');
+        if (!select) return;
+        const opt = select.options[select.selectedIndex];
+        if (!opt || !opt.value) return;
+        const harga = parseFloat(opt.getAttribute('data-harga')) || 0;
+        const satuan = opt.getAttribute('data-satuan') || 'kg';
+        const hargaInput = document.getElementById('harga-' + idx);
+        if (hargaInput && harga > 0) {
+            hargaInput.value = harga;
+        }
+        const satuanEl = document.getElementById('satuan-' + idx);
+        if (satuanEl) {
+            satuanEl.innerText = satuan;
+        }
+        calculateRow(idx);
+    }
+
     function calculateRow(idx) {
-        const qty = parseFloat(document.getElementById(`qty-${idx}`).value) || 0;
-        const harga = parseFloat(document.getElementById(`harga-${idx}`).value) || 0;
+        const qty = parseDecimal(document.getElementById(`qty-${idx}`).value);
+        const harga = parseRupiah(document.getElementById(`harga-${idx}`).value);
         const subtotal = qty * harga;
 
         document.getElementById(`subtotal-${idx}`).innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
@@ -237,6 +279,15 @@
         calculateAll();
     }
 
+    function onPotonganInput() {
+        potonganManual = true;
+        calculateAll();
+    }
+    function resetPotonganAuto() {
+        potonganManual = false;
+        calculateAll();
+    }
+
     function calculateAll() {
         let totalBruto = 0;
         document.querySelectorAll('[id^="raw-subtotal-"]').forEach(el => {
@@ -246,18 +297,22 @@
         document.getElementById('labelTotalBruto').innerText = 'Rp ' + totalBruto.toLocaleString('id-ID');
         document.getElementById('hiddenTotalBruto').value = totalBruto;
 
-        let potongan = parseFloat(document.getElementById('potonganInput').value) || 0;
-        
-        // Batasi potongan tidak boleh melebihi total panen
-        if (potongan > totalBruto) {
-            potongan = totalBruto;
-            document.getElementById('potonganInput').value = potongan;
-        }
-
-        // Batasi potongan tidak boleh melebihi sisa utang berjalan
-        if (currentPetaniDebt > 0 && potongan > currentPetaniDebt) {
-            potongan = currentPetaniDebt;
-            document.getElementById('potonganInput').value = potongan;
+        const potonganInputEl = document.getElementById('potonganInput');
+        let potongan;
+        if (!potonganManual) {
+            // Otomatis: seluruh hasil panen ditahan untuk membayar kewajiban,
+            // dibatasi sisa kewajiban. Petani baru menerima uang kalau total panen melebihi sisa.
+            potongan = Math.min(totalBruto, currentPetaniDebt);
+            if (potonganInputEl) potonganInputEl.value = potongan;
+        } else {
+            potongan = parseRupiah(potonganInputEl.value);
+            if (potongan > totalBruto) {
+                potongan = totalBruto;
+            }
+            if (currentPetaniDebt > 0 && potongan > currentPetaniDebt) {
+                potongan = currentPetaniDebt;
+            }
+            if (potonganInputEl) potonganInputEl.value = potongan;
         }
 
         const uangDiterima = Math.max(0, totalBruto - potongan);
@@ -267,7 +322,19 @@
         document.getElementById('labelSisaSetelahnya').innerText = 'Rp ' + sisaKewajibanBaru.toLocaleString('id-ID');
     }
 
+    // Normalisasi sebelum kirim ke server, supaya 25.000 terkirim sebagai 25000 bukan 25
+    const transaksiForm = document.getElementById('transaksiForm');
+    if (transaksiForm) {
+        transaksiForm.addEventListener('submit', function () {
+            document.querySelectorAll('[id^="harga-"]').forEach(function (el) { el.value = parseRupiah(el.value); });
+            document.querySelectorAll('[id^="qty-"]').forEach(function (el) { el.value = parseDecimal(el.value); });
+            const pot = document.getElementById('potonganInput');
+            if (pot) { pot.value = parseRupiah(pot.value); }
+        });
+    }
+
     // Initialize with 1 row on load
-    
+    addRow();
+    updatePetaniInfo();
 </script>
 @endsection

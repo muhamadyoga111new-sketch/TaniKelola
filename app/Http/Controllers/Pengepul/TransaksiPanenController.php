@@ -38,7 +38,7 @@ class TransaksiPanenController extends Controller
             $query->whereDate('tanggal_transaksi', '<=', $endDate);
         }
 
-        $transaksis = $query->latest('tanggal_transaksi')->paginate(10)->withQueryString();
+        $transaksis = $query->orderByDesc('tanggal_transaksi')->orderByDesc('created_at')->orderByDesc('id')->paginate(10)->withQueryString();
         $petanis = Petani::orderBy('nama_petani')->get();
 
         $totalNilaiPanen = TransaksiPanen::sum('total_bruto');
@@ -153,9 +153,24 @@ class TransaksiPanenController extends Controller
         return view('pengepul.transaksi.show', compact('transaksi'));
     }
 
-    public function cetak(TransaksiPanen $transaksi)
+    public function cetak(Request $request, TransaksiPanen $transaksi)
     {
         $transaksi->load(['petani', 'details.komoditas', 'user']);
+
+        // ?print=1 -> buka halaman print lama (window.print), bukan unduh PDF.
+        if ($request->query('print')) {
+            return view('pengepul.transaksi.cetak', compact('transaksi'));
+        }
+
+        // Kalau Dompdf sudah terpasang (composer require barryvdh/laravel-dompdf),
+        // unduh langsung sebagai file PDF. Kalau belum, jatuh ke halaman
+        // cetak lama (window.print, lalu pilih Save as PDF di dialog browser).
+        if (class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pengepul.transaksi.cetak_pdf', compact('transaksi'));
+            $pdf->setPaper('a4', 'portrait');
+            return $pdf->download('Nota-' . $transaksi->nomor_transaksi . '.pdf');
+        }
+
         return view('pengepul.transaksi.cetak', compact('transaksi'));
     }
 

@@ -93,13 +93,13 @@
     <!-- 2 Column Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 
-        <!-- Transaksi Panen Terkini -->
+        <!-- Aktivitas Terkini: panen + modal + bayar tunai -->
         <div class="lg:col-span-2 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
-                <h4 class="font-bold text-sm sm:text-base text-slate-900">Transaksi Terkini</h4>
-                <a href="{{ route('pengepul.transaksi.index') }}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
-                    Lihat Semua &rarr;
-                </a>
+                <div>
+                    <h4 class="font-bold text-sm sm:text-base text-slate-900">Aktivitas Terkini</h4>
+                    <p class="text-[10px] sm:text-xs text-slate-500">Panen, pemberian modal, dan bayar tunai terbaru</p>
+                </div>
             </div>
 
             <!-- Desktop Table (hidden on mobile) -->
@@ -109,50 +109,47 @@
                         <tr class="text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                             <th class="py-2.5 pr-3">Tanggal</th>
                             <th class="py-2.5 pr-3">Petani</th>
-                            <th class="py-2.5 pr-3">Komoditas</th>
+                            <th class="py-2.5 pr-3">Jenis</th>
+                            <th class="py-2.5 pr-3">Detail</th>
                             <th class="py-2.5 text-right pr-3">Nilai</th>
-                            <th class="py-2.5 text-right pr-3">Potong</th>
-                            <th class="py-2.5 text-right pr-3">Diterima</th>
                             <th class="py-2.5 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @forelse($transaksiTerbaru as $trx)
+                        @forelse($aktivitasTerbaru as $item)
                             <tr class="hover:bg-slate-50/80 transition">
                                 <td class="py-3 pr-3 text-xs text-slate-600">
                                     <span class="font-medium text-slate-800">
-                                        {{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->translatedFormat('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($item['tanggal'])->translatedFormat('d M Y') }}
                                     </span>
                                 </td>
                                 <td class="py-3 pr-3 text-xs">
-                                    <span class="font-bold text-slate-900">{{ $trx->petani->nama_petani }}</span>
+                                    <span class="font-bold text-slate-900">{{ $item['petani'] }}</span>
                                 </td>
-                                <td class="py-3 pr-3 text-xs text-slate-600">
-                                    @foreach($trx->details as $d)
-                                        <span class="inline-block bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-medium mr-0.5 mb-0.5">
-                                            {{ $d->komoditas->nama_komoditas }}: {{ $d->jumlah_panen }} {{ $d->komoditas->satuan }}
-                                        </span>
-                                    @endforeach
+                                <td class="py-3 pr-3 text-xs">
+                                    @if($item['jenis'] === 'panen')
+                                        <span class="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[10px]">Panen</span>
+                                    @elseif($item['jenis'] === 'modal')
+                                        <span class="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-bold text-[10px]">Modal</span>
+                                    @else
+                                        <span class="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-bold text-[10px]">Bayar Tunai</span>
+                                    @endif
                                 </td>
-                                <td class="py-3 text-right pr-3 text-xs font-semibold text-slate-800">
-                                    Rp {{ number_format($trx->total_bruto, 0, ',', '.') }}
-                                </td>
-                                <td class="py-3 text-right pr-3 text-xs font-semibold text-rose-600">
-                                    -{{ number_format($trx->potongan_kewajiban, 0, ',', '.') }}
-                                </td>
-                                <td class="py-3 text-right pr-3 text-xs font-bold text-emerald-700">
-                                    Rp {{ number_format($trx->uang_diterima_petani, 0, ',', '.') }}
+                                <td class="py-3 pr-3 text-xs text-slate-600">{{ $item['detail'] }}</td>
+                                <td class="py-3 text-right pr-3 text-xs">
+                                    <span class="font-semibold text-slate-800">Rp {{ number_format($item['nominal'], 0, ',', '.') }}</span>
+                                    <span class="block text-[10px] text-slate-400 font-normal">{{ $item['sub'] }}</span>
                                 </td>
                                 <td class="py-3 text-center text-xs">
-                                    <a href="{{ route('pengepul.transaksi.show', $trx) }}" class="inline-flex items-center px-2 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-[11px] transition">
+                                    <a href="{{ $item['url'] }}" class="inline-flex items-center px-2 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-[11px] transition">
                                         Rincian &rarr;
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="py-8 text-center text-slate-400 text-xs">
-                                    Belum ada transaksi panen.
+                                <td colspan="6" class="py-8 text-center text-slate-400 text-xs">
+                                    Belum ada aktivitas.
                                 </td>
                             </tr>
                         @endforelse
@@ -162,30 +159,30 @@
 
             <!-- Mobile Cards (shown on mobile only) -->
             <div class="md:hidden space-y-3">
-                @forelse($transaksiTerbaru as $trx)
-                    <a href="{{ route('pengepul.transaksi.show', $trx) }}" class="block p-3 rounded-xl border border-slate-100 hover:border-emerald-200 transition bg-slate-50/50">
+                @forelse($aktivitasTerbaru as $item)
+                    <a href="{{ $item['url'] }}" class="block p-3 rounded-xl border border-slate-100 hover:border-emerald-200 transition bg-slate-50/50">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-900">{{ $trx->petani->nama_petani }}</span>
-                            <span class="text-[10px] text-slate-500 font-medium">{{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->translatedFormat('d M Y') }}</span>
+                            <span class="text-xs font-bold text-slate-900">{{ $item['petani'] }}</span>
+                            <span class="text-[10px] text-slate-500 font-medium">{{ \Carbon\Carbon::parse($item['tanggal'])->translatedFormat('d M Y') }}</span>
                         </div>
-                        <div class="flex flex-wrap gap-1 mt-1.5">
-                            @foreach($trx->details as $d)
-                                <span class="bg-slate-200/60 px-1.5 py-0.5 rounded text-[10px] font-medium text-slate-600">
-                                    {{ $d->komoditas->nama_komoditas }}: {{ $d->jumlah_panen }} {{ $d->komoditas->satuan }}
-                                </span>
-                            @endforeach
+                        <div class="flex items-center gap-1.5">
+                            @if($item['jenis'] === 'panen')
+                                <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[10px]">Panen</span>
+                            @elseif($item['jenis'] === 'modal')
+                                <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-bold text-[10px]">Modal</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-bold text-[10px]">Bayar Tunai</span>
+                            @endif
+                            <span class="text-[11px] text-slate-600 truncate">{{ $item['detail'] }}</span>
                         </div>
                         <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-                            <div class="text-[10px] text-slate-500">
-                                Bruto: <span class="font-semibold text-slate-700">Rp {{ number_format($trx->total_bruto, 0, ',', '.') }}</span>
-                                <span class="text-rose-500 ml-1">-{{ number_format($trx->potongan_kewajiban, 0, ',', '.') }}</span>
-                            </div>
-                            <span class="text-xs font-bold text-emerald-700">Rp {{ number_format($trx->uang_diterima_petani, 0, ',', '.') }}</span>
+                            <span class="text-[10px] text-slate-500">{{ $item['sub'] }}</span>
+                            <span class="text-xs font-bold text-slate-900">Rp {{ number_format($item['nominal'], 0, ',', '.') }}</span>
                         </div>
                     </a>
                 @empty
                     <div class="py-8 text-center text-slate-400 text-xs">
-                        Belum ada transaksi panen.
+                        Belum ada aktivitas.
                     </div>
                 @endforelse
             </div>

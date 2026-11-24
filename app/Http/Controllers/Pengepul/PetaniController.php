@@ -98,9 +98,9 @@ class PetaniController extends Controller
     public function show(Petani $petani)
     {
         $petani->load([
-            'modals' => fn($q) => $q->latest('tanggal_pemberian'),
-            'transaksiPanens' => fn($q) => $q->with('details.komoditas')->latest('tanggal_transaksi'),
-            'pembayaranKewajibans' => fn($q) => $q->latest('tanggal_bayar'),
+            'modals' => fn($q) => $q->orderByDesc('tanggal_pemberian')->orderByDesc('created_at')->orderByDesc('id'),
+            'transaksiPanens' => fn($q) => $q->with('details.komoditas')->orderByDesc('tanggal_transaksi')->orderByDesc('created_at')->orderByDesc('id'),
+            'pembayaranKewajibans' => fn($q) => $q->orderByDesc('tanggal_bayar')->orderByDesc('created_at')->orderByDesc('id'),
             'user'
         ]);
 

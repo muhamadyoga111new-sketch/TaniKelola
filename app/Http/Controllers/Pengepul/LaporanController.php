@@ -34,14 +34,14 @@ class LaporanController extends Controller
             if ($petaniId) {
                 $query->where('petani_id', $petaniId);
             }
-            $dataLaporan = $query->latest('tanggal_transaksi')->get();
+            $dataLaporan = $query->orderByDesc('tanggal_transaksi')->orderByDesc('created_at')->orderByDesc('id')->get();
         } elseif ($jenisLaporan === 'modal') {
             $query = Modal::with('petani')
                 ->whereBetween('tanggal_pemberian', [$startDate, $endDate]);
             if ($petaniId) {
                 $query->where('petani_id', $petaniId);
             }
-            $dataLaporan = $query->latest('tanggal_pemberian')->get();
+            $dataLaporan = $query->orderByDesc('tanggal_pemberian')->orderByDesc('created_at')->orderByDesc('id')->get();
         }
 
         return view('pengepul.laporan.index', compact(
@@ -76,14 +76,14 @@ class LaporanController extends Controller
             if ($petaniId) {
                 $query->where('petani_id', $petaniId);
             }
-            $dataLaporan = $query->latest('tanggal_transaksi')->get();
+            $dataLaporan = $query->orderByDesc('tanggal_transaksi')->orderByDesc('created_at')->orderByDesc('id')->get();
         } elseif ($jenisLaporan === 'modal') {
             $query = Modal::with('petani')
                 ->whereBetween('tanggal_pemberian', [$startDate, $endDate]);
             if ($petaniId) {
                 $query->where('petani_id', $petaniId);
             }
-            $dataLaporan = $query->latest('tanggal_pemberian')->get();
+            $dataLaporan = $query->orderByDesc('tanggal_pemberian')->orderByDesc('created_at')->orderByDesc('id')->get();
         }
 
         return view('pengepul.laporan.cetak', compact(
