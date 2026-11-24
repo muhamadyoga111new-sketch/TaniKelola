@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Pengepul\DashboardController as PengepulDashboardController;
@@ -34,6 +35,15 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Profil Saya (semua peran yang sudah login)
+Route::middleware('auth')->group(function () {
+    Route::get('/profil', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profil/ubah', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profil/password', [ProfileController::class, 'editPassword'])->name('profile.password.edit');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+});
 
 // Rute Admin (Super Administrator)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {

@@ -10,6 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Sembunyikan ikon mata bawaan browser (Edge/Chrome) pada field password,
+           supaya hanya ikon mata kita sendiri yang tampil (tidak dobel). */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear { display: none; }
+        input[type="password"]::-webkit-credentials-auto-fill-button { visibility: hidden; }
     </style>
 </head>
 <body class="h-full flex items-center justify-center p-4 sm:p-6 bg-radial-[at_top_right] from-emerald-950 via-slate-950 to-black text-slate-100">

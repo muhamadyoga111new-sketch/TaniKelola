@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; font-feature-settings: "liga" 0, "calt" 0; }
         @media (min-width: 768px) {
             .md\:block, [class~="md:block"] { display: block !important; }
             .md\:flex, [class~="md:flex"] { display: flex !important; }
@@ -23,9 +23,15 @@
         #floatingPill.pill-shrunk { padding-left: .5rem; padding-right: .5rem; }
         #floatingPill.pill-shrunk:hover .nav-label, #floatingPill.pill-shrunk:hover .brand-text { display: inline; }
         #floatingPill.pill-shrunk:hover { padding-left: .75rem; padding-right: .75rem; }
+
+        /* Sembunyikan ikon mata bawaan browser (Edge/Chrome) pada field password,
+           supaya hanya ikon mata kita sendiri yang tampil (tidak dobel). */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear { display: none; }
+        input[type="password"]::-webkit-credentials-auto-fill-button { visibility: hidden; }
     </style>
 </head>
-<body class="h-full antialiased text-slate-800 flex flex-col min-h-screen bg-[#f7faf7]">
+<body class="h-full antialiased text-slate-800 flex flex-col min-h-screen bg-[#f7faf7] overflow-x-hidden">
 
     {{-- Top bar sederhana, HP saja. Menu utama ada di bottom nav. --}}
     <header class="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
@@ -38,9 +44,9 @@
                 <span class="text-[10px] block text-slate-500 font-medium">Bajuin, Tanah Laut</span>
             </div>
         </div>
-        <div class="w-8 h-8 rounded-full bg-[#14532d] text-white flex items-center justify-center font-bold text-xs uppercase">
+        <a href="{{ route('profile.show') }}" class="w-8 h-8 rounded-full bg-[#14532d] text-white flex items-center justify-center font-bold text-xs uppercase">
             {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
-        </div>
+        </a>
     </header>
 
     {{-- Floating pill, laptop saja. Melayang di tengah atas. --}}
@@ -106,18 +112,15 @@
     {{-- Panel "Lainnya" di bawah floating pill, laptop saja. --}}
     <div id="pillMorePanel" class="fixed top-[76px] left-1/2 -translate-x-1/2 z-50 w-72 rounded-lg bg-white border border-slate-200 shadow-xl p-2" style="display:none;">
         <p class="px-3 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">{{ auth()->user()->name ?? '' }} &middot; {{ auth()->user()->role ?? '' }}</p>
+        <a href="{{ route('profile.show') }}" class="block px-3 py-2 rounded-md text-sm font-bold text-[#14532d] hover:bg-[#f7faf7]">Profil Saya</a>
         @if(auth()->user()->role === 'pengepul')
             <a href="{{ route('pengepul.komoditas.index') }}" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-[#f7faf7]">Komoditas Sayur</a>
             <a href="{{ route('pengepul.wa_log.index') }}" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-[#f7faf7]">WhatsApp Gateway</a>
         @endif
-        <form action="{{ route('logout') }}" method="POST" class="border-t border-slate-100 mt-1 pt-1">
-            @csrf
-            <button type="submit" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-rose-600 hover:bg-rose-50">Keluar (Logout)</button>
-        </form>
     </div>
 
     <!-- Main Content Area -->
-    <main id="mainScroll" class="flex-1 flex flex-col min-w-0 overflow-y-auto pt-24 md:pt-28 pb-24 md:pb-0">
+    <main id="mainScroll" class="flex-1 flex flex-col min-w-0 overflow-y-auto pt-4 md:pt-28 pb-24 md:pb-0">
         <!-- Top Banner Header -->
         <div class="px-4 sm:px-6 max-w-7xl mx-auto w-full">
             <div class="bg-white border border-slate-200 rounded-lg px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
@@ -127,10 +130,6 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     <span class="text-xs text-slate-500 hidden sm:inline">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</span>
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#14532d]/10 text-[#14532d] border border-[#14532d]/20">
-                        <span class="w-2 h-2 rounded-full bg-[#15803d] mr-1.5"></span>
-                        Sistem Aktif
-                    </span>
                 </div>
             </div>
         </div>
@@ -182,9 +181,9 @@
     </main>
 
     {{-- Bottom nav, HP saja. --}}
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 w-full z-50 bg-white border-t border-slate-200">
         @if(auth()->user()->role === 'pengepul')
-            <div class="grid grid-cols-5 items-end pb-2 pt-1">
+            <div class="grid grid-cols-5 w-full items-end pb-2 pt-1">
                 <a href="{{ route('pengepul.dashboard') }}" class="flex flex-col items-center gap-0.5 text-[11px] font-bold {{ request()->routeIs('pengepul.dashboard') ? 'text-[#14532d]' : 'text-slate-500' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Beranda
@@ -207,13 +206,13 @@
                 </button>
             </div>
         @elseif(auth()->user()->role === 'admin')
-            <div class="grid grid-cols-3 items-end pb-2 pt-1">
+            <div class="grid grid-cols-3 w-full items-end pb-2 pt-1">
                 <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center gap-0.5 text-[11px] font-bold text-[#14532d]">Beranda</a>
                 <a href="{{ route('admin.users.index') }}" class="flex flex-col items-center gap-0.5 text-[11px] font-bold text-slate-500">Akun</a>
                 <button type="button" id="mobileMoreBtn" class="flex flex-col items-center gap-0.5 text-[11px] font-bold text-slate-500">Lainnya</button>
             </div>
         @else
-            <div class="grid grid-cols-2 items-end pb-2 pt-1">
+            <div class="grid grid-cols-2 w-full items-end pb-2 pt-1">
                 <a href="{{ route('petani.dashboard') }}" class="flex flex-col items-center gap-0.5 text-[11px] font-bold text-[#14532d]">Status Saya</a>
                 <button type="button" id="mobileMoreBtn" class="flex flex-col items-center gap-0.5 text-[11px] font-bold text-slate-500">Lainnya</button>
             </div>
@@ -222,6 +221,7 @@
 
     {{-- Panel "Lainnya", HP saja, muncul di atas bottom nav. --}}
     <div id="mobileMorePanel" class="md:hidden fixed bottom-[76px] left-4 right-4 z-50 rounded-lg bg-white border border-slate-200 shadow-xl p-2" style="display:none;">
+        <a href="{{ route('profile.show') }}" class="block px-3 py-2.5 rounded-md text-sm font-bold text-[#14532d] hover:bg-[#f7faf7]">Profil Saya</a>
         @if(auth()->user()->role === 'pengepul')
             <a href="{{ route('pengepul.pembayaran.index') }}" class="block px-3 py-2.5 rounded-md text-sm font-medium text-slate-700 hover:bg-[#f7faf7]">Pembayaran Kewajiban</a>
             <a href="{{ route('pengepul.petani.index') }}" class="block px-3 py-2.5 rounded-md text-sm font-medium text-slate-700 hover:bg-[#f7faf7]">Data Petani Mitra</a>
@@ -233,10 +233,6 @@
         @else
             <a href="{{ route('petani.dashboard') }}" class="block px-3 py-2.5 rounded-md text-sm font-medium text-slate-700 hover:bg-[#f7faf7]">Status &amp; Riwayat Saya</a>
         @endif
-        <form action="{{ route('logout') }}" method="POST" class="border-t border-slate-100 mt-1 pt-1">
-            @csrf
-            <button type="submit" class="w-full text-left px-3 py-2.5 rounded-md text-sm font-medium text-rose-600 hover:bg-rose-50">Keluar (Logout)</button>
-        </form>
     </div>
 
     <script>
