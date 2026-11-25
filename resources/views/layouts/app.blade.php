@@ -176,7 +176,7 @@
 
         <!-- Footer -->
         <footer class="mt-auto px-6 py-4 text-center text-xs text-slate-400 border-t border-slate-200">
-            &copy; {{ date('Y') }} TaniKelola &bull; Proposal TA Muhammad Yoga (2401301003) &bull; TI Politeknik Negeri Tanah Laut
+            &copy; {{ date('Y') }} TaniKelola &bull; Muhammad Yoga &bull; TI Politeknik Negeri Tanah Laut
         </footer>
     </main>
 
