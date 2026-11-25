@@ -61,7 +61,7 @@
                                 @elseif($b->status_wa === 'simulasi')
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">Simulasi</span>
                                 @else
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Pending</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span>
                                 @endif
                             </td>
                             <td class="py-3 px-4 text-center">
