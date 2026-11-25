@@ -31,16 +31,33 @@
         }
         #itemsTable td[data-label=""]::before { display: none; }
         #itemsTable td:last-child { text-align: right; padding-top: 0.5rem !important; }
-        /* Baris Subtotal di kartu HP: label di kiri, nilai di kanan, tanpa ruang kosong. */
+        /* Baris bawah kartu HP: Hapus di kiri, Subtotal jadi chip ringkas di kanan,
+           bukan baris selebar kartu. */
+        #itemsTable tbody tr { display: grid; grid-template-columns: auto 1fr; align-items: center; }
+        #itemsTable tbody tr td:nth-child(1),
+        #itemsTable tbody tr td:nth-child(2),
+        #itemsTable tbody tr td:nth-child(3) { grid-column: 1 / -1; }
         #itemsTable td[data-label="Subtotal"] {
+            grid-column: 2;
+            grid-row: 4;
+            justify-self: end;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #f1f5f9;
+            gap: 0.5rem;
+            align-items: baseline;
+            width: fit-content;
+            background: #f7faf7;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.4rem 0.75rem !important;
             margin-top: 0.25rem;
-            padding-top: 0.5rem !important;
         }
         #itemsTable td[data-label="Subtotal"]::before { margin-bottom: 0; }
+        #itemsTable td:last-child {
+            grid-column: 1;
+            grid-row: 4;
+            text-align: left;
+            align-self: center;
+        }
     }
 </style>
 <div class="max-w-4xl mx-auto">
@@ -269,7 +286,6 @@
                 <select name="items[${rowIndex}][komoditas_id]" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-[#15803d]" required onchange="onKomoditasChange(${rowIndex})">
                     ${optionsHtml}
                 </select>
-                <input type="text" name="items[${rowIndex}][keterangan]" placeholder="Keterangan mutu (opsional)" class="w-full mt-1 px-2 py-1 rounded border border-slate-100 text-[11px] text-slate-500">
             </td>
             <td class="p-2.5" data-label="Berat / Timbangan">
                 <div class="relative">
