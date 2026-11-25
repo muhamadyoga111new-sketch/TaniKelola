@@ -31,6 +31,16 @@
         }
         #itemsTable td[data-label=""]::before { display: none; }
         #itemsTable td:last-child { text-align: right; padding-top: 0.5rem !important; }
+        /* Baris Subtotal di kartu HP: label di kiri, nilai di kanan, tanpa ruang kosong. */
+        #itemsTable td[data-label="Subtotal"] {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 0.25rem;
+            padding-top: 0.5rem !important;
+        }
+        #itemsTable td[data-label="Subtotal"]::before { margin-bottom: 0; }
     }
 </style>
 <div class="max-w-4xl mx-auto">
