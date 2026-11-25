@@ -18,16 +18,16 @@
 <div class="max-w-3xl mx-auto space-y-6">
 
     <!-- The Invoice Card -->
-    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-8 space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-6">
 
         <!-- Invoice Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-200/80 gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b-2 border-[#eab308] gap-4">
             <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white flex items-center justify-center text-2xl font-black shadow-md">
-                    🌱
+                <div class="w-12 h-12 rounded-2xl bg-white border border-slate-200 overflow-hidden shrink-0">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo TaniKelola" class="w-full h-full object-cover">
                 </div>
                 <div>
-                    <h3 class="font-black text-xl text-slate-900 tracking-tight">TaniKelola</h3>
+                    <h3 class="font-black text-xl text-[#14532d] tracking-tight">TaniKelola</h3>
                     <p class="text-xs text-slate-500">Pengepul Sayuran Bajuin &bull; Bpk. Mohtar</p>
                     <p class="text-[11px] text-slate-400">Tanah Laut, Kalimantan Selatan</p>
                 </div>
@@ -44,11 +44,11 @@
                 </div>
                 <div class="mt-1">
                     @if($transaksi->status_wa === 'terkirim')
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">WhatsApp Terkirim</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#14532d]/10 text-[#14532d]">WhatsApp Terkirim</span>
                     @elseif($transaksi->status_wa === 'simulasi')
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">Mode Simulasi WA</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#eab308]/15 text-[#92400e]">Mode Simulasi WA</span>
                     @else
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Pending WA</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">Pending WA</span>
                     @endif
                 </div>
             </div>
@@ -56,14 +56,14 @@
 
         <!-- Farmer & Buyer Info -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+            <div class="p-4 rounded-2xl bg-[#f7faf7] border border-slate-200 border-l-4 border-l-[#14532d]">
                 <span class="font-bold text-slate-400 uppercase tracking-wider block mb-1">Petani Penjual:</span>
                 <p class="text-sm font-bold text-slate-900">{{ $transaksi->petani->nama_petani }}</p>
                 <p class="text-slate-500">WA: {{ $transaksi->petani->no_wa }}</p>
                 <p class="text-slate-400 mt-0.5">{{ $transaksi->petani->alamat ?? 'Desa Bajuin' }}</p>
             </div>
 
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+            <div class="p-4 rounded-2xl bg-[#f7faf7] border border-slate-200 border-l-4 border-l-[#eab308]">
                 <span class="font-bold text-slate-400 uppercase tracking-wider block mb-1">Pengepul Penerima:</span>
                 <p class="text-sm font-bold text-slate-900">Bpk. Mohtar</p>
                 <p class="text-slate-500">Pengepul Hasil Tani Bajuin</p>
@@ -74,7 +74,7 @@
         <!-- Items Table -->
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50/80 border-y border-slate-200/80 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <thead class="bg-[#14532d] border-b-2 border-[#eab308] text-[11px] font-bold uppercase tracking-wider text-white">
                     <tr>
                         <th class="py-3 px-4">No.</th>
                         <th class="py-3 px-4">Komoditas Sayuran</th>
@@ -109,7 +109,7 @@
         </div>
 
         <!-- Total and Deductions Breakdown -->
-        <div class="border-t border-slate-200/80 pt-4 flex flex-col sm:flex-row justify-end">
+        <div class="border-t border-slate-200 pt-4 flex flex-col sm:flex-row justify-end">
             <div class="w-full sm:w-80 space-y-2 text-sm">
                 <div class="flex justify-between py-1 text-slate-600">
                     <span>Total Nilai Panen Bruto:</span>
@@ -121,9 +121,9 @@
                     <span class="font-bold">-Rp {{ number_format($transaksi->potongan_kewajiban, 0, ',', '.') }}</span>
                 </div>
 
-                <div class="flex justify-between py-2 border-y border-slate-200 text-base font-black text-emerald-800 bg-emerald-50/50 px-3 rounded-xl">
-                    <span>UANG DITERIMA PETANI:</span>
-                    <span class="text-emerald-700 font-black text-lg">Rp {{ number_format($transaksi->uang_diterima_petani, 0, ',', '.') }}</span>
+                <div class="flex justify-between items-center py-2.5 px-3 rounded-xl bg-[#14532d] border-b-2 border-[#eab308] text-base font-black">
+                    <span class="text-white text-sm">UANG DITERIMA PETANI:</span>
+                    <span class="text-[#eab308] font-black text-lg">Rp {{ number_format($transaksi->uang_diterima_petani, 0, ',', '.') }}</span>
                 </div>
 
                 <div class="pt-2 text-xs text-slate-500 space-y-1">
@@ -140,7 +140,7 @@
         </div>
 
         @if($transaksi->catatan)
-            <div class="p-3 bg-slate-50 rounded-xl text-xs text-slate-600">
+            <div class="p-3 bg-[#f7faf7] border border-slate-200 rounded-xl text-xs text-slate-600">
                 <strong class="text-slate-800">Catatan:</strong> {{ $transaksi->catatan }}
             </div>
         @endif
@@ -157,13 +157,12 @@
             <div class="flex flex-wrap items-center gap-2">
                 <form action="{{ route('pengepul.transaksi.kirim_wa', $transaksi) }}" method="POST">
                     @csrf
-                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 font-bold text-xs flex items-center space-x-1.5 transition">
-                        <span>💬</span>
-                        <span>Kirim Ulang Notifikasi WhatsApp</span>
+                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-white hover:bg-[#f7faf7] text-[#14532d] border border-[#14532d]/30 font-bold text-xs transition">
+                        Kirim Ulang Notifikasi WhatsApp
                     </button>
                 </form>
 
-                <a href="{{ route('pengepul.transaksi.cetak', $transaksi) }}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center space-x-1.5 transition shadow-sm">
+                <a href="{{ route('pengepul.transaksi.cetak', $transaksi) }}" class="px-4 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold text-xs flex items-center space-x-1.5 transition shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
                     <span>Unduh PDF</span>
                 </a>
