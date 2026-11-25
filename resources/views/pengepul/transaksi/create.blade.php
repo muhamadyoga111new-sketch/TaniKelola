@@ -130,8 +130,8 @@
                                 <th class="py-2.5 px-3">Komoditas Sayuran</th>
                                 <th class="py-2.5 px-3 w-32">Berat / Timbangan</th>
                                 <th class="py-2.5 px-3 w-40">Harga Beli / Satuan</th>
-                                <th class="py-2.5 px-3 w-44 text-right">Subtotal</th>
-                                <th class="py-2.5 px-3 w-12 text-center">Hapus</th>
+                                <th class="py-2.5 px-3 w-36 text-right">Subtotal</th>
+                                <th class="py-2.5 px-3 w-20 text-center">Hapus</th>
                             </tr>
                         </thead>
                         <tbody id="itemsBody" class="divide-y divide-slate-100">
