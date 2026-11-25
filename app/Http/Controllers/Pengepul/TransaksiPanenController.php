@@ -71,6 +71,20 @@ class TransaksiPanenController extends Controller
 
     public function store(Request $request)
     {
+        // Nomor dibuat dari jumlah transaksi hari ini. Kalau form dikirim ulang
+        // (mis. setelah gagal validasi, atau tombol Simpan diklik dua kali),
+        // nomor yang sama akan ditolak aturan unique. Jadi kalau sudah dipakai,
+        // cari nomor kosong berikutnya sebelum validasi.
+        $nomor = $request->input('nomor_transaksi');
+        if ($nomor && TransaksiPanen::where('nomor_transaksi', $nomor)->exists()) {
+            $countToday = TransaksiPanen::whereDate('created_at', now()->toDateString())->count();
+            do {
+                $countToday++;
+                $nomor = 'TRX-' . now()->format('Ym') . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
+            } while (TransaksiPanen::where('nomor_transaksi', $nomor)->exists());
+            $request->merge(['nomor_transaksi' => $nomor]);
+        }
+
         $validated = $request->validate([
             'nomor_transaksi' => ['required', 'string', 'unique:transaksi_panen,nomor_transaksi'],
             'petani_id' => ['required', 'exists:petani,id'],
@@ -84,6 +98,7 @@ class TransaksiPanenController extends Controller
             'items.*.harga_beli' => ['required', 'numeric', 'min:100'],
             'items.*.keterangan' => ['nullable', 'string'],
         ], [
+            'nomor_transaksi.unique' => 'Nomor transaksi sudah digunakan, silakan coba simpan lagi.',
             'items.required' => 'Minimal tambahkan 1 jenis komoditas sayuran.',
             'items.*.jumlah_panen.min' => 'Berat/jumlah panen harus lebih dari 0.',
         ]);

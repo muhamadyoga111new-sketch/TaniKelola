@@ -53,6 +53,20 @@ class ModalController extends Controller
 
     public function store(Request $request)
     {
+        // Kode dibuat dari jumlah modal hari ini. Kalau form dikirim ulang
+        // (mis. setelah gagal validasi, atau tombol Simpan diklik dua kali),
+        // kode yang sama akan ditolak aturan unique. Jadi kalau sudah dipakai,
+        // cari kode kosong berikutnya sebelum validasi.
+        $kode = $request->input('kode_modal');
+        if ($kode && Modal::where('kode_modal', $kode)->exists()) {
+            $countToday = Modal::whereDate('created_at', now()->toDateString())->count();
+            do {
+                $countToday++;
+                $kode = 'MDL-' . now()->format('Ym') . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
+            } while (Modal::where('kode_modal', $kode)->exists());
+            $request->merge(['kode_modal' => $kode]);
+        }
+
         $validated = $request->validate([
             'kode_modal' => ['required', 'string', 'unique:modal,kode_modal'],
             'petani_id' => ['required', 'exists:petani,id'],

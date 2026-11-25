@@ -49,6 +49,20 @@ class PembayaranKewajibanController extends Controller
 
     public function store(Request $request)
     {
+        // Kode dibuat dari jumlah pembayaran hari ini. Kalau form dikirim ulang
+        // (mis. setelah gagal validasi, atau tombol Simpan diklik dua kali),
+        // kode yang sama akan ditolak aturan unique. Jadi kalau sudah dipakai,
+        // cari kode kosong berikutnya sebelum validasi.
+        $kode = $request->input('kode_pembayaran');
+        if ($kode && PembayaranKewajiban::where('kode_pembayaran', $kode)->exists()) {
+            $countToday = PembayaranKewajiban::whereDate('created_at', now()->toDateString())->count();
+            do {
+                $countToday++;
+                $kode = 'BYR-' . now()->format('Ym') . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
+            } while (PembayaranKewajiban::where('kode_pembayaran', $kode)->exists());
+            $request->merge(['kode_pembayaran' => $kode]);
+        }
+
         $validated = $request->validate([
             'kode_pembayaran' => ['required', 'string', 'unique:pembayaran_kewajiban,kode_pembayaran'],
             'petani_id' => ['required', 'exists:petani,id'],
