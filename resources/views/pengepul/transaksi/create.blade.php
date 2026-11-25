@@ -5,6 +5,34 @@
 @section('page_subtitle', 'Timbang hasil panen petani, hitung potongan kewajiban, dan kirim rincian nota via WhatsApp')
 
 @section('content')
+<style>
+    /* HP (<768px): tabel komoditas berubah jadi kartu bertumpuk, satu baris = satu kartu.
+       Input dan id-nya tetap sama, jadi JS hitungan tidak berubah sama sekali. */
+    @media (max-width: 767px) {
+        #itemsTable thead { display: none; }
+        #itemsTable, #itemsTable tbody, #itemsTable tr, #itemsTable td { display: block; width: 100%; }
+        #itemsTable tbody tr {
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: #fff;
+        }
+        #itemsTable td { padding: 0.25rem 0 !important; border: 0; }
+        #itemsTable td::before {
+            content: attr(data-label);
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+        #itemsTable td[data-label=""]::before { display: none; }
+        #itemsTable td:last-child { text-align: right; padding-top: 0.5rem !important; }
+    }
+</style>
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 sm:p-8">
         <form action="{{ route('pengepul.transaksi.store') }}" method="POST" id="transaksiForm" class="space-y-6">
@@ -55,12 +83,12 @@
 
             <!-- 2. Multi-Row Vegetable Harvest Items -->
             <div>
-                <div class="flex items-center justify-between mb-3">
-                    <div>
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div class="min-w-0">
                         <h4 class="font-bold text-sm text-slate-900"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#14532d] text-white text-[11px] font-bold mr-1.5">2</span> Rincian Komoditas Sayuran</h4>
                         <p class="text-xs text-slate-500 mt-1">Pilih sayuran, masukkan timbangan kg dan harga beli saat transaksi.</p>
                     </div>
-                    <button type="button" onclick="addRow()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#14532d]/10 hover:bg-[#14532d]/20 text-[#14532d] font-bold text-xs transition">
+                    <button type="button" onclick="addRow()" class="shrink-0 whitespace-nowrap inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#14532d]/10 hover:bg-[#14532d]/20 text-[#14532d] font-bold text-xs transition">
                         <span>+ Tambah Baris Sayur</span>
                     </button>
                 </div>
@@ -87,15 +115,15 @@
             <div>
                 <h4 class="font-bold text-sm text-slate-900 mb-3"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#14532d] text-white text-[11px] font-bold mr-1.5">3</span> Hitungan dan Potongan</h4>
                 <div class="p-5 rounded-2xl bg-[#14532d] border-b-4 border-[#eab308] text-white shadow-md space-y-3">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-white/80">Total Nilai Penjualan Panen (Bruto):</span>
+                    <div class="flex items-center justify-between gap-3 text-sm">
+                        <span class="text-white/80 leading-snug">Total Nilai Penjualan Panen (Bruto):</span>
                         <span id="labelTotalBruto" class="font-extrabold text-xl text-white">Rp 0</span>
                         <input type="hidden" name="hidden_total_bruto" id="hiddenTotalBruto" value="0">
                     </div>
 
                     <div class="pt-3 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                            <label for="potonganInput" class="text-xs font-bold text-white flex items-center">
+                            <label for="potonganInput" class="text-xs font-bold text-white flex flex-wrap items-center gap-1">
                                 Potongan Kewajiban / Cicilan Modal:
                                 <span class="ml-2 text-[10px] px-2 py-0.5 rounded bg-white/15 text-white">Disepakati</span>
                                 <button type="button" onclick="resetPotonganAuto()" class="ml-2 text-[10px] px-2 py-0.5 rounded bg-[#eab308] text-[#1a2e22] font-bold">Potong penuh</button>
@@ -112,8 +140,8 @@
                         </div>
                     </div>
 
-                    <div class="pt-3 border-t border-white/15 flex items-center justify-between text-base">
-                        <div>
+                    <div class="pt-3 border-t border-white/15 flex items-center justify-between gap-3 text-base">
+                        <div class="min-w-0">
                             <span class="font-bold text-[#eab308] text-sm block">UANG BERSIH DITERIMA PETANI:</span>
                             <span class="text-[11px] text-white/70">Total Panen dikurangi Potongan Modal</span>
                         </div>
@@ -211,31 +239,31 @@
         });
 
         tr.innerHTML = `
-            <td class="p-2.5">
+            <td class="p-2.5" data-label="Komoditas Sayuran">
                 <select name="items[${rowIndex}][komoditas_id]" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-[#15803d]" required onchange="onKomoditasChange(${rowIndex})">
                     ${optionsHtml}
                 </select>
                 <input type="text" name="items[${rowIndex}][keterangan]" placeholder="Keterangan mutu (opsional)" class="w-full mt-1 px-2 py-1 rounded border border-slate-100 text-[11px] text-slate-500">
             </td>
-            <td class="p-2.5">
+            <td class="p-2.5" data-label="Berat / Timbangan">
                 <div class="relative">
                     <input type="number" step="0.1" min="0.1" name="items[${rowIndex}][jumlah_panen]" id="qty-${rowIndex}" required placeholder="0" oninput="calculateRow(${rowIndex})"
                         class="w-full pr-7 pl-2 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-800">
                     <span id="satuan-${rowIndex}" class="absolute right-2 top-2 text-[10px] text-slate-400">kg</span>
                 </div>
             </td>
-            <td class="p-2.5">
+            <td class="p-2.5" data-label="Harga Beli / Satuan">
                 <div class="relative">
                     <span class="absolute left-2 top-2 text-[10px] text-slate-400 font-bold">Rp</span>
                     <input type="number" step="1" min="100" name="items[${rowIndex}][harga_beli]" id="harga-${rowIndex}" required placeholder="0" oninput="calculateRow(${rowIndex})"
                         class="w-full pl-7 pr-2 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-[#14532d]">
                 </div>
             </td>
-            <td class="p-2.5 text-right font-black text-slate-800 text-xs">
+            <td class="p-2.5 text-right font-black text-slate-800 text-xs" data-label="Subtotal">
                 <span id="subtotal-${rowIndex}">Rp 0</span>
                 <input type="hidden" id="raw-subtotal-${rowIndex}" value="0">
             </td>
-            <td class="p-2.5 text-center">
+            <td class="p-2.5 text-center" data-label="">
                 <button type="button" onclick="removeRow(${rowIndex})" class="text-rose-500 hover:text-rose-700 text-xs p-1">Hapus</button>
             </td>
         `;
