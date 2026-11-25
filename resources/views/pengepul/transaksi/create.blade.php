@@ -67,7 +67,7 @@
                                     data-kewajiban="{{ $p->sisa_kewajiban }}"
                                     data-wa="{{ $p->no_wa }}"
                                     {{ (old('petani_id', $selectedPetaniId) == $p->id) ? 'selected' : '' }}>
-                                    {{ $p->nama_petani }} - WA: {{ $p->no_wa }}
+                                    {{ $p->nama_petani }}
                                 </option>
                             @endforeach
                         </select>
