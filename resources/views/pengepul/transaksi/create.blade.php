@@ -83,15 +83,17 @@
 
             <!-- 2. Multi-Row Vegetable Harvest Items -->
             <div>
-                <div class="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
-                    <div class="min-w-0">
-                        <h4 class="font-bold text-sm text-slate-900"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#14532d] text-white text-[11px] font-bold mr-1.5">2</span> Rincian Komoditas Sayuran</h4>
-                        <p class="text-xs text-slate-500 mt-1">Pilih sayuran, masukkan timbangan kg dan harga beli saat transaksi.</p>
-                    </div>
+                <div class="min-w-0 mb-2">
+                    <h4 class="font-bold text-sm text-slate-900"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#14532d] text-white text-[11px] font-bold mr-1.5">2</span> Rincian Komoditas Sayuran</h4>
+                    <p class="text-xs text-slate-500 mt-1">Pilih sayuran, masukkan timbangan kg dan harga beli saat transaksi.</p>
+                </div>
+                {{-- Tombol menempel (sticky) selama masih di bagian komoditas: tetap terlihat
+                     saat scroll lewat banyak baris, dan ikut hilang begitu masuk bagian Hitungan. --}}
+                <div class="sticky top-0 md:top-20 z-20 bg-white py-2 sm:flex sm:justify-end border-b border-slate-100">
                     <button type="button" onclick="addRow()" class="w-full sm:w-auto justify-center shrink-0 whitespace-nowrap inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#14532d]/10 hover:bg-[#14532d]/20 text-[#14532d] font-bold text-xs transition">
                         <span>+ Tambah Baris Sayur</span>
                     </button>
-                    <p id="rowHint" class="hidden text-[11px] text-rose-600">Isi dulu komoditas di baris terakhir sebelum menambah baris baru.</p>
+                    <p id="rowHint" class="hidden text-[11px] text-rose-600 mt-1">Isi dulu komoditas di baris terakhir sebelum menambah baris baru.</p>
                 </div>
 
                 <div class="overflow-x-auto border border-slate-200 rounded-2xl">
