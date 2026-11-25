@@ -83,14 +83,15 @@
 
             <!-- 2. Multi-Row Vegetable Harvest Items -->
             <div>
-                <div class="flex items-center justify-between gap-3 mb-3">
+                <div class="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
                     <div class="min-w-0">
                         <h4 class="font-bold text-sm text-slate-900"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#14532d] text-white text-[11px] font-bold mr-1.5">2</span> Rincian Komoditas Sayuran</h4>
                         <p class="text-xs text-slate-500 mt-1">Pilih sayuran, masukkan timbangan kg dan harga beli saat transaksi.</p>
                     </div>
-                    <button type="button" onclick="addRow()" class="shrink-0 whitespace-nowrap inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#14532d]/10 hover:bg-[#14532d]/20 text-[#14532d] font-bold text-xs transition">
+                    <button type="button" onclick="addRow()" class="w-full sm:w-auto justify-center shrink-0 whitespace-nowrap inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#14532d]/10 hover:bg-[#14532d]/20 text-[#14532d] font-bold text-xs transition">
                         <span>+ Tambah Baris Sayur</span>
                     </button>
+                    <p id="rowHint" class="hidden text-[11px] text-rose-600">Isi dulu komoditas di baris terakhir sebelum menambah baris baru.</p>
                 </div>
 
                 <div class="overflow-x-auto border border-slate-200 rounded-2xl">
@@ -228,6 +229,19 @@
     }
 
     function addRow() {
+        // Jangan tambah baris baru kalau baris terakhir masih kosong (belum pilih komoditas),
+        // supaya tidak menumpuk baris kosong. Arahkan fokus ke baris terakhir itu.
+        const hint = document.getElementById('rowHint');
+        if (rowIndex > 0) {
+            const lastRow = document.getElementById('row-' + (rowIndex - 1));
+            const lastSelect = lastRow ? lastRow.querySelector('select') : null;
+            if (lastSelect && !lastSelect.value) {
+                if (hint) hint.classList.remove('hidden');
+                lastSelect.focus();
+                return;
+            }
+        }
+        if (hint) hint.classList.add('hidden');
         const tbody = document.getElementById('itemsBody');
         const tr = document.createElement('tr');
         tr.id = 'row-' + rowIndex;
@@ -273,6 +287,8 @@
     }
 
     function onKomoditasChange(idx) {
+        const hint = document.getElementById('rowHint');
+        if (hint) hint.classList.add('hidden');
         const row = document.getElementById('row-' + idx);
         if (!row) return;
         const select = row.querySelector('select[name="items[' + idx + '][komoditas_id]"]');
@@ -305,9 +321,15 @@
 
     function removeRow(idx) {
         const row = document.getElementById('row-' + idx);
-        if (row) {
-            row.remove();
-        }
+        if (!row) return;
+        // Minta konfirmasi hanya kalau barisnya sudah terisi, supaya tidak sengaja
+        // menghapus komoditas yang sudah dipilih. Baris kosong langsung dihapus.
+        const select = row.querySelector('select');
+        const qty = document.getElementById('qty-' + idx);
+        const harga = document.getElementById('harga-' + idx);
+        const terisi = (select && select.value) || (qty && parseDecimal(qty.value) > 0) || (harga && parseRupiah(harga.value) > 0);
+        if (terisi && !confirm('Hapus baris komoditas ini?')) return;
+        row.remove();
         calculateAll();
     }
 
