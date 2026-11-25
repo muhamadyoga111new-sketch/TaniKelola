@@ -31,8 +31,9 @@
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Beli Standar (Rp) *</label>
-                <input type="number" name="harga_pasar_default" value="{{ old('harga_pasar_default', 10000) }}" required min="0" step="500"
+                <input type="text" id="hargaDisplay" value="{{ number_format(old('harga_pasar_default', 10000), 0, ',', '.') }}" required placeholder="0" oninput="formatHarga(this)"
                     class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-800">
+                <input type="hidden" name="harga_pasar_default" id="hargaInput" value="{{ old('harga_pasar_default', 10000) }}">
             </div>
 
             <div>
@@ -53,3 +54,20 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Harga tampil dengan titik ribuan (10.000), yang dikirim ke server tetap angka polos.
+    function formatHarga(el) {
+        const clean = el.value.replace(/[^0-9]/g, '');
+        if (clean === '') {
+            document.getElementById('hargaInput').value = '';
+            el.value = '';
+            return;
+        }
+        const number = parseInt(clean, 10);
+        document.getElementById('hargaInput').value = number;
+        el.value = number.toLocaleString('id-ID');
+    }
+</script>
+@endpush
