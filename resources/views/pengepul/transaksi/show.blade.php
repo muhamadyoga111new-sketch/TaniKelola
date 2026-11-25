@@ -5,6 +5,42 @@
 @section('page_subtitle', 'Nota resmi penjualan hasil panen ' . $transaksi->nomor_transaksi)
 
 @section('content')
+<style>
+    /* HP (<768px): tabel rincian nota berubah jadi kartu per komoditas, supaya
+       kolom tidak terpotong dan halaman tidak bisa di-scroll ke samping. */
+    @media (max-width: 767px) {
+        #notaTable thead { display: none; }
+        #notaTable, #notaTable tbody, #notaTable tr, #notaTable td { display: block; width: 100%; }
+        #notaTable tbody tr {
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: #fff;
+        }
+        #notaTable td { padding: 0.25rem 0 !important; border: 0; text-align: left !important; }
+        #notaTable td::before {
+            content: attr(data-label);
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+        #notaTable td[data-label=""] { display: none; }
+        #notaTable td[data-label="Subtotal"] {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 0.25rem;
+            padding-top: 0.5rem !important;
+        }
+        #notaTable td[data-label="Subtotal"]::before { margin-bottom: 0; }
+    }
+</style>
 @php
     // Kembali ke halaman sebelumnya (daftar modal / detail petani / dashboard, dst).
     // Kalau tidak ada halaman sebelumnya yang aman (misal dibuka langsung,
@@ -73,7 +109,7 @@
 
         <!-- Items Table -->
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+            <table class="w-full text-left text-sm" id="notaTable">
                 <thead class="bg-[#14532d] border-b-2 border-[#eab308] text-[11px] font-bold uppercase tracking-wider text-white">
                     <tr>
                         <th class="py-3 px-4">No.</th>
@@ -86,20 +122,20 @@
                 <tbody class="divide-y divide-slate-100">
                     @foreach($transaksi->details as $index => $item)
                         <tr>
-                            <td class="py-3 px-4 text-slate-400 font-mono text-xs">{{ $index + 1 }}</td>
-                            <td class="py-3 px-4">
+                            <td class="py-3 px-4 text-slate-400 font-mono text-xs" data-label="">{{ $index + 1 }}</td>
+                            <td class="py-3 px-4" data-label="Komoditas Sayuran">
                                 <span class="font-bold text-slate-800 block">{{ $item->komoditas->nama_komoditas }}</span>
                                 @if($item->keterangan)
                                     <span class="text-xs text-slate-400">{{ $item->keterangan }}</span>
                                 @endif
                             </td>
-                            <td class="py-3 px-4 text-right font-medium text-slate-700">
+                            <td class="py-3 px-4 text-right font-medium text-slate-700" data-label="Timbangan / Berat">
                                 {{ $item->jumlah_panen }} {{ $item->komoditas->satuan }}
                             </td>
-                            <td class="py-3 px-4 text-right font-medium text-slate-700">
+                            <td class="py-3 px-4 text-right font-medium text-slate-700" data-label="Harga Beli / Satuan">
                                 Rp {{ number_format($item->harga_beli, 0, ',', '.') }}
                             </td>
-                            <td class="py-3 px-4 text-right font-extrabold text-slate-900">
+                            <td class="py-3 px-4 text-right font-extrabold text-slate-900" data-label="Subtotal">
                                 Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                             </td>
                         </tr>

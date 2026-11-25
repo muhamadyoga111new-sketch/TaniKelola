@@ -120,7 +120,7 @@
     </div>
 
     <!-- Main Content Area -->
-    <main id="mainScroll" class="flex-1 flex flex-col min-w-0 overflow-y-auto pt-4 md:pt-28 pb-24 md:pb-0">
+    <main id="mainScroll" class="flex-1 flex flex-col min-w-0 overflow-y-auto pt-4 md:pt-28 pb-32 md:pb-0">
         <!-- Top Banner Header -->
         <div class="px-4 sm:px-6 max-w-7xl mx-auto w-full">
             <div class="bg-white border border-slate-200 rounded-lg px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
