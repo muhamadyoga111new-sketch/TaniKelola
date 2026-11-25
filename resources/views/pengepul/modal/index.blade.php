@@ -11,7 +11,7 @@
     <div class="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
         <form method="GET" action="{{ route('pengepul.modal.index') }}" class="flex flex-wrap items-center gap-2 sm:gap-3">
             <select name="petani_id" class="w-full sm:w-auto px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500">
-                <option value="">-- Semua Petani --</option>
+                <option value="">Semua Petani</option>
                 @foreach($petanis as $p)
                     <option value="{{ $p->id }}" {{ $petaniId == $p->id ? 'selected' : '' }}>
                         {{ $p->nama_petani }}
@@ -20,7 +20,7 @@
             </select>
 
             <select name="jenis_modal" class="w-full sm:w-auto px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500">
-                <option value="">-- Semua Jenis --</option>
+                <option value="">Semua Jenis</option>
                 <option value="barang" {{ $jenisModal === 'barang' ? 'selected' : '' }}>Barang / Bahan</option>
                 <option value="uang" {{ $jenisModal === 'uang' ? 'selected' : '' }}>Uang Tunai</option>
             </select>

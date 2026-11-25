@@ -61,7 +61,7 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Petani *</label>
                         <select name="petani_id" id="petaniSelect" required onchange="updatePetaniInfo()"
                             class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-[#15803d] focus:border-transparent bg-white">
-                            <option value="">-- Pilih Petani Binaan --</option>
+                            <option value="">Pilih Petani Binaan</option>
                             @foreach($petanis as $p)
                                 <option value="{{ $p->id }}"
                                     data-kewajiban="{{ $p->sisa_kewajiban }}"
@@ -249,7 +249,7 @@
         tr.id = 'row-' + rowIndex;
         tr.className = 'hover:bg-[#f7faf7]';
 
-        let optionsHtml = '<option value="">-- Pilih Sayuran --</option>';
+        let optionsHtml = '<option value="">Pilih Sayuran</option>';
         komoditasData.forEach(k => {
             optionsHtml += `<option value="${k.id}" data-harga="${k.harga_pasar_default}" data-satuan="${k.satuan}">${k.nama_komoditas} (${k.kategori})</option>`;
         });

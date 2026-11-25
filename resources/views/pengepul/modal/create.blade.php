@@ -27,7 +27,7 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Petani Penerima Modal *</label>
                 <select name="petani_id" id="petaniSelect" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500">
-                    <option value="">-- Pilih Petani Binaan --</option>
+                    <option value="">Pilih Petani Binaan</option>
                     @foreach($petanis as $p)
                         <option value="{{ $p->id }}" {{ (old('petani_id', $selectedPetaniId) == $p->id) ? 'selected' : '' }}>
                             {{ $p->nama_petani }} - Sisa Kewajiban: Rp {{ number_format($p->sisa_kewajiban, 0, ',', '.') }}

@@ -12,7 +12,7 @@
         <form method="GET" action="{{ route('pengepul.transaksi.index') }}" class="flex flex-wrap items-center gap-2 sm:gap-3">
             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mr-1">Saring</span>
             <select name="petani_id" class="w-full sm:w-auto px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#15803d] focus:border-transparent">
-                <option value="">-- Semua Petani --</option>
+                <option value="">Semua Petani</option>
                 @foreach($petanis as $p)
                     <option value="{{ $p->id }}" {{ $petaniId == $p->id ? 'selected' : '' }}>
                         {{ $p->nama_petani }}

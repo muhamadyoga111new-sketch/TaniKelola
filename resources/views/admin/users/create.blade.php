@@ -20,7 +20,7 @@
                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Role / Peran <span class="text-rose-500">*</span></label>
                 <select name="role" id="roleSelect" required
                     class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
-                    <option value="">-- Pilih Role --</option>
+                    <option value="">Pilih Role</option>
                     <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin (Administrator)</option>
                     <option value="pengepul" {{ old('role') === 'pengepul' ? 'selected' : '' }}>Pengepul</option>
                     <option value="petani" {{ old('role') === 'petani' ? 'selected' : '' }}>Petani Mitra</option>

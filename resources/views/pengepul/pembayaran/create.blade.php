@@ -27,7 +27,7 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Petani Pembayar *</label>
                 <select name="petani_id" id="petaniSelect" required onchange="updateDebtInfo()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-teal-500">
-                    <option value="">-- Pilih Petani yang Memiliki Kewajiban --</option>
+                    <option value="">Pilih Petani yang Memiliki Kewajiban</option>
                     @foreach($petanis as $p)
                         <option value="{{ $p->id }}" data-debt="{{ $p->sisa_kewajiban }}" {{ (old('petani_id', $selectedPetaniId) == $p->id) ? 'selected' : '' }}>
                             {{ $p->nama_petani }} - Sisa Utang: Rp {{ number_format($p->sisa_kewajiban, 0, ',', '.') }}
